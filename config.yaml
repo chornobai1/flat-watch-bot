@@ -2,34 +2,8 @@
 # Тут задаються тільки джерела і фільтри.
 
 filters:
-  locations:
-    - "praha 5"
-    - "praha 13"
-    - "stodůlky"
-    - "stodulky"
-    - "luka"
-    - "lužiny"
-    - "nove butovice"
-    - "nové butovice"
-    - "zličín"
-    - "zlicin"
-    - "jinonice"
-    - "smíchov"
-    - "smichov"
-
-  excluded_locations:
-    - "holešovice"
-    - "holesovice"
-    - "praha 7"
-    - "vršovice"
-    - "vrsovice"
-    - "vysočany"
-    - "vysocany"
-    - "ruzyně"
-    - "ruzyne"
-    - "praha 10"
-    - "praha 9"
-    - "praha 6"
+  locations: []
+  excluded_locations: []
 
   layouts:
     - "3+kk"

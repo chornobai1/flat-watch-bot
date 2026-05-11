@@ -2,62 +2,22 @@
 # Тут задаються тільки джерела і фільтри.
 
 filters:
-  locations:
-    - "praha 5"
-    - "praha 13"
-    - "stodůlky"
-    - "stodulky"
-    - "luka"
-    - "lužiny"
-    - "nove butovice"
-    - "nové butovice"
-    - "zličín"
-    - "zlicin"
-    - "jinonice"
+  locations: []
 
-  excluded_locations:
-    - "praha 1"
-    - "praha 2"
-    - "praha 3"
-    - "praha 4"
-    - "praha 6"
-    - "praha 7"
-    - "praha 8"
-    - "praha 9"
-    - "praha 10"
-    - "holešovice"
-    - "holesovice"
-    - "vršovice"
-    - "vrsovice"
-    - "vysočany"
-    - "vysocany"
-    - "smíchov"
-    - "smichov"
+  excluded_locations: []
 
   layouts:
     - "3+kk"
     - "4+kk"
     - "5+kk"
+    - "6+kk"
     - "3+1"
     - "4+1"
     - "5+1"
+    - "6+1"
+
 sources:
-  - name: "Sreality Praha 3+kk"
-    site: "sreality"
-    enabled: false
-    url: "https://www.sreality.cz/hledani/pronajem/byty/praha?velikost=3%2Bkk"
-
-  - name: "Sreality Praha 4+kk"
-    site: "sreality"
-    enabled: false
-    url: "https://www.sreality.cz/hledani/pronajem/byty/praha?velikost=4%2Bkk"
-
-  - name: "Sreality Praha 3+1"
-    site: "sreality"
-    enabled: false
-    url: "https://www.sreality.cz/hledani/pronajem/byty/praha?velikost=3%2B1"
-
-  - name: "Bezrealitky Praha rent flats"
+  - name: "Bezrealitky Praha 5 / Praha 13 / Stodulky map search"
     site: "bezrealitky"
     enabled: true
-    url: "https://www.bezrealitky.cz/vyhledat?boundaryPoints=%5B%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.363174213830064%7D%2C%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.254992947950115%7D%2C%7B%22lat%22%3A50.01744844676773%2C%22lng%22%3A14.254992947950115%7D%2C%7B%22lat%22%3A50.01744844676773%2C%22lng%22%3A14.363174213830064%7D%2C%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.363174213830064%7D%5D&estateType=BYT&location=exact&offerType=PRONAJEM&searchOnMap=true&currency=CZK&zoom=12.935147937981066&lng=14.309083580890047&lat=50.04169953348986#lat=50.041785604325185&lng=14.312496399555812&zoom=12.935147937981066"
+    url: "https://www.bezrealitky.cz/vyhledat?boundaryPoints=%5B%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.363174213830064%7D%2C%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.254992947950115%7D%2C%7B%22lat%22%3A50.01744844676773%2C%22lng%22%3A14.254992947950115%7D%2C%7B%22lat%22%3A50.01744844676773%2C%22lng%22%3A14.363174213830064%7D%2C%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.363174213830064%7D%5D&disposition=DISP_3_1&disposition=DISP_3_KK&disposition=DISP_4_1&disposition=DISP_4_KK&disposition=DISP_5_1&disposition=DISP_5_KK&disposition=DISP_6_1&estateType=BYT&location=exact&offerType=PRONAJEM&searchOnMap=true&currency=CZK"

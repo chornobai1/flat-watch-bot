@@ -161,12 +161,49 @@ def listing_from_card(card, base_url: str, source_name: str, site: str) -> Listi
 
 def parse_sreality_html(html: str, source_name: str, base_url: str) -> List[Listing]:
     soup = BeautifulSoup(html, "lxml")
-    cards = extract_listing_cards(soup)
     listings = []
-    for card in cards:
-        item = listing_from_card(card, base_url, source_name, "sreality")
-        if item:
-            listings.append(item)
+
+    # Sreality часто має посилання на detail у HTML навіть якщо картки складні.
+    links = soup.find_all("a", href=True)
+
+    for a in links:
+        href = a.get("href", "")
+
+        if "/detail/pronajem/byt/" not in href:
+            continue
+
+        url = normalize_url("https://www.sreality.cz", href.split("?")[0].split("#")[0])
+
+        # Беремо текст навколо лінка
+        parent = a
+        for _ in range(5):
+            if parent.parent:
+                parent = parent.parent
+
+        text = clean_text(parent.get_text(" "))
+
+        if not text:
+            text = clean_text(a.get_text(" "))
+
+        layout_match = re.search(r"([1-9]\+(?:kk|1))", text, flags=re.IGNORECASE)
+        area_match = re.search(r"(\d{2,4}\s*m²)", text)
+        price_match = re.search(r"(\d[\d\s]{2,}\s*Kč(?:/měsíc| měsíčně|)?)", text)
+
+        title = text[:160] if text else "Sreality listing"
+
+        listings.append(
+            Listing(
+                source=source_name,
+                site="sreality",
+                title=title,
+                url=url,
+                price=clean_text(price_match.group(1)) if price_match else "",
+                area=clean_text(area_match.group(1)) if area_match else "",
+                layout=clean_text(layout_match.group(1)) if layout_match else "",
+                location=text[:300],
+            )
+        )
+
     return deduplicate_listings(listings)
 
 
@@ -302,8 +339,8 @@ def main() -> None:
         print(f"Found raw listings: {len(listings)}")
 
         for item in listings:
-           # if not passes_filters(item, filters):
-           #     continue
+            if not passes_filters(item, filters):
+                continue
             if item.uid in seen:
                 continue
 

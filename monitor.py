@@ -546,34 +546,33 @@ def main() -> None:
         for item in listings:
             if not passes_filters(item, filters):
                 continue
+
             if item.uid in seen:
                 continue
 
             new_items.append(item)
             seen.add(item.uid)
 
-        # пауза між сайтами
         time.sleep(2)
 
-        sent_count = 0
+    sent_count = 0
 
-        for item in new_items[:20]:
-            message = format_telegram_message(item)
+    for item in new_items[:20]:
+        message = format_telegram_message(item)
 
-            try:
-                send_telegram(token, chat_id, message)
-                sent_count += 1
-            except Exception as e:
-                print(f"Failed to send Telegram message for {item.url}: {e}")
-                continue
+        try:
+            send_telegram(token, chat_id, message)
+            sent_count += 1
+        except Exception as e:
+            print(f"Failed to send Telegram message for {item.url}: {e}")
+            continue
 
-    time.sleep(1)
-
-print(f"Telegram messages sent successfully: {sent_count}")
+        time.sleep(1)
 
     save_seen(seen)
 
-    print(f"New items sent: {len(new_items)}")
+    print(f"New items found: {len(new_items)}")
+    print(f"Telegram messages sent successfully: {sent_count}")
 
 
 if __name__ == "__main__":

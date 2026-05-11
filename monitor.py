@@ -346,7 +346,7 @@ def main() -> None:
 
         print(f"Found raw listings: {len(listings)}")
 
-         for item in listings:
+        for item in listings:
             if not passes_filters(item, filters):
                 continue
             if item.uid in seen:

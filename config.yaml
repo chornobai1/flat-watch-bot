@@ -60,4 +60,4 @@ sources:
   - name: "Bezrealitky Praha rent flats"
     site: "bezrealitky"
     enabled: true
-    url: "https://www.bezrealitky.cz/vypis/nabidka-pronajem/byt/praha"
+    url: "https://www.bezrealitky.cz/vyhledat?boundaryPoints=%5B%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.363174213830064%7D%2C%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.254992947950115%7D%2C%7B%22lat%22%3A50.01744844676773%2C%22lng%22%3A14.254992947950115%7D%2C%7B%22lat%22%3A50.01744844676773%2C%22lng%22%3A14.363174213830064%7D%2C%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.363174213830064%7D%5D&estateType=BYT&location=exact&offerType=PRONAJEM&searchOnMap=true&currency=CZK&zoom=12.935147937981066&lng=14.309083580890047&lat=50.04169953348986#lat=50.041785604325185&lng=14.312496399555812&zoom=12.935147937981066"

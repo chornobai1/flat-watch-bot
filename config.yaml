@@ -3,16 +3,33 @@
 
 filters:
   locations:
-    - "Praha 5"
-    - "Praha 13"
-    - "Stodůlky"
-    - "Stodulky"
-    - "Luka"
-    - "Lužiny"
-    - "Nové Butovice"
-    - "Zličín"
-    - "Jinonice"
-    - "Smíchov"
+    - "praha 5"
+    - "praha 13"
+    - "stodůlky"
+    - "stodulky"
+    - "luka"
+    - "lužiny"
+    - "nove butovice"
+    - "nové butovice"
+    - "zličín"
+    - "zlicin"
+    - "jinonice"
+    - "smíchov"
+    - "smichov"
+
+  excluded_locations:
+    - "holešovice"
+    - "holesovice"
+    - "praha 7"
+    - "vršovice"
+    - "vrsovice"
+    - "vysočany"
+    - "vysocany"
+    - "ruzyně"
+    - "ruzyne"
+    - "praha 10"
+    - "praha 9"
+    - "praha 6"
 
   layouts:
     - "3+kk"
@@ -21,21 +38,20 @@ filters:
     - "3+1"
     - "4+1"
     - "5+1"
-
 sources:
   - name: "Sreality Praha 3+kk"
     site: "sreality"
-    enabled: true
+    enabled: false
     url: "https://www.sreality.cz/hledani/pronajem/byty/praha?velikost=3%2Bkk"
 
   - name: "Sreality Praha 4+kk"
     site: "sreality"
-    enabled: true
+    enabled: false
     url: "https://www.sreality.cz/hledani/pronajem/byty/praha?velikost=4%2Bkk"
 
   - name: "Sreality Praha 3+1"
     site: "sreality"
-    enabled: true
+    enabled: false
     url: "https://www.sreality.cz/hledani/pronajem/byty/praha?velikost=3%2B1"
 
   - name: "Bezrealitky Praha rent flats"

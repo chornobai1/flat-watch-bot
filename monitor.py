@@ -236,21 +236,29 @@ def passes_filters(item: Listing, filters: Dict[str, Any]) -> bool:
         item.area,
         item.price,
         item.url,
-    ])
+    ]).lower()
 
-    locations = filters.get("locations", [])
-    layouts = filters.get("layouts", [])
+    allowed_layouts = [x.lower() for x in filters.get("layouts", [])]
+    allowed_locations = [x.lower() for x in filters.get("locations", [])]
+    excluded_locations = [x.lower() for x in filters.get("excluded_locations", [])]
 
-    # Якщо URL джерела вже вузький, локація може не бути в тексті картки.
-    # Тому фільтр локації м’який: якщо не знайшли, не відкидаємо автоматично.
-    layout_ok = text_has_any(full_text, layouts) if layouts else True
+    found_layout = re.search(r"\b([1-9]\+(?:kk|1))\b", full_text, flags=re.IGNORECASE)
+    if not found_layout:
+        return False
 
-    # Локацію перевіряємо м’яко, але якщо вона є в тексті — це плюс.
-    location_ok = True
-    if locations and any(loc.lower() in full_text.lower() for loc in ["praha", "stod"]):
-        location_ok = text_has_any(full_text, locations)
+    layout = found_layout.group(1).lower()
+    if layout not in allowed_layouts:
+        return False
 
-    return layout_ok and location_ok
+    for bad_location in excluded_locations:
+        if bad_location in full_text:
+            return False
+
+    if allowed_locations:
+        if not any(location in full_text for location in allowed_locations):
+            return False
+
+    return True
 
 
 def format_telegram_message(item: Listing) -> str:

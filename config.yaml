@@ -1,0 +1,32 @@
+# Інтервал задається в GitHub Actions workflow.
+# Тут задаються тільки джерела і фільтри.
+
+filters:
+  locations:
+    - "Praha 5"
+    - "Praha 13"
+    - "Stodůlky"
+    - "Stodulky"
+  layouts:
+    - "3+kk"
+    - "4+kk"
+    - "5+kk"
+    - "3+1"
+    - "4+1"
+    - "5+1"
+
+sources:
+  - name: "Sreality Praha 5 3+kk"
+    site: "sreality"
+    enabled: true
+    url: "https://www.sreality.cz/hledani/pronajem/byty/praha-5?velikost=3%2Bkk"
+
+  - name: "Sreality Praha 13 3+kk"
+    site: "sreality"
+    enabled: true
+    url: "https://www.sreality.cz/hledani/pronajem/byty/praha-13?velikost=3%2Bkk"
+
+  - name: "Bezrealitky Praha rent flats"
+    site: "bezrealitky"
+    enabled: true
+    url: "https://www.bezrealitky.cz/vypis/nabidka-pronajem/byt/praha"

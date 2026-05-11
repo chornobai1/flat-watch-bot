@@ -409,7 +409,18 @@ def collect_sreality_api(source: Dict[str, Any]) -> List[Listing]:
                 layout = found_layout.group(1) if found_layout else ""
 
             estate_id = str(detail.get("hash_id") or detail.get("id") or detail_href.split("/")[-1])
-            url = f"{web_base_url}/detail/pronajem/byt/praha/{estate_id}"
+            api_detail_url = f"https://www.sreality.cz/api/cs/v2/estates/{estate_id}"
+
+            url = (
+                get_nested(detail, ["_links", "canonical", "href"])
+                or get_nested(detail, ["seo", "url"])
+                or get_nested(detail, ["seo", "permalink"])
+                or detail.get("url")
+                or api_detail_url
+            )
+
+            if url.startswith("/"):
+                url = "https://www.sreality.cz" + url
 
             listings.append(
                 Listing(

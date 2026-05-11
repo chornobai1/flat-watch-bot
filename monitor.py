@@ -347,7 +347,15 @@ def main() -> None:
         print(f"Found raw listings: {len(listings)}")
 
         for item in listings:
+            print("----- LISTING DEBUG -----")
+            print("TITLE:", item.title)
+            print("URL:", item.url)
+            print("LAYOUT:", item.layout)
+            print("LOCATION:", item.location[:300])
+            print("-------------------------")
+
             if not passes_filters(item, filters):
+                print("SKIPPED BY FILTER")
                 continue
             if item.uid in seen:
                 continue

@@ -304,10 +304,139 @@ def send_telegram(token: str, chat_id: str, message: str) -> None:
     response = requests.post(url, json=payload, timeout=30)
     response.raise_for_status()
 
+def fetch_json(url: str, params: dict | None = None) -> dict:
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0 Safari/537.36"
+        ),
+        "Accept": "application/json",
+        "Accept-Language": "cs-CZ,cs;q=0.9,en;q=0.7,uk;q=0.6",
+    }
+    response = requests.get(url, params=params, headers=headers, timeout=30)
+    response.raise_for_status()
+    return response.json()
+
+
+def in_bbox(lat, lon, bbox: dict) -> bool:
+    if lat is None or lon is None:
+        return False
+
+    return (
+        bbox["lat_min"] <= float(lat) <= bbox["lat_max"]
+        and bbox["lon_min"] <= float(lon) <= bbox["lon_max"]
+    )
+
+
+def get_nested(data: dict, path: list, default=None):
+    current = data
+    for key in path:
+        if not isinstance(current, dict):
+            return default
+        current = current.get(key)
+        if current is None:
+            return default
+    return current
+
+
+def collect_sreality_api(source: Dict[str, Any]) -> List[Listing]:
+    api_url = "https://www.sreality.cz/api/cs/v2/estates"
+    detail_base_url = "https://www.sreality.cz/api"
+    web_base_url = "https://www.sreality.cz"
+
+    max_pages = int(source.get("max_pages", 3))
+    bbox = source.get("bbox", {})
+    api_params = source.get("api_params", {}).copy()
+
+    listings: List[Listing] = []
+
+    for page in range(1, max_pages + 1):
+        params = {
+            **api_params,
+            "per_page": 60,
+            "page": page,
+            "sort": 0,
+        }
+
+        data = fetch_json(api_url, params=params)
+        estates = get_nested(data, ["_embedded", "estates"], [])
+
+        if not estates:
+            break
+
+        for estate in estates:
+            detail_href = get_nested(estate, ["_links", "self", "href"])
+            if not detail_href:
+                continue
+
+            try:
+                detail = fetch_json(detail_base_url + detail_href)
+            except Exception as e:
+                print(f"Sreality detail error: {e}")
+                continue
+
+            lat = get_nested(detail, ["map", "lat"])
+            lon = get_nested(detail, ["map", "lon"])
+
+            if bbox and not in_bbox(lat, lon, bbox):
+                continue
+
+            title = clean_text(get_nested(detail, ["name", "value"], "") or estate.get("name", ""))
+            locality = clean_text(get_nested(detail, ["locality", "value"], "") or estate.get("locality", ""))
+            price = str(get_nested(detail, ["price_czk", "value"], "") or estate.get("price", ""))
+            area = ""
+            layout = ""
+
+            for param in detail.get("items", []):
+                name = clean_text(str(param.get("name", ""))).lower()
+                value = param.get("value", "")
+
+                if isinstance(value, dict):
+                    value = value.get("value", "")
+                elif isinstance(value, list):
+                    value = ", ".join(clean_text(str(x.get("value", x))) for x in value)
+
+                value = clean_text(str(value))
+
+                if "užitná plocha" in name or "podlahová plocha" in name:
+                    area = value
+                if "typ bytu" in name or "dispozice" in name:
+                    layout = value
+
+            if not layout:
+                found_layout = re.search(r"([1-9]\+(?:kk|1))", title + " " + locality, flags=re.IGNORECASE)
+                layout = found_layout.group(1) if found_layout else ""
+
+            estate_id = str(detail.get("hash_id") or detail.get("id") or detail_href.split("/")[-1])
+            url = f"{web_base_url}/detail/pronajem/byt/praha/{estate_id}"
+
+            listings.append(
+                Listing(
+                    source=source["name"],
+                    site="sreality",
+                    title=title or "Sreality listing",
+                    url=url,
+                    price=price,
+                    area=area,
+                    layout=layout,
+                    location=locality,
+                )
+            )
+
+            time.sleep(0.3)
+
+        time.sleep(1)
+
+    return deduplicate_listings(listings)
 
 def collect_source(source: Dict[str, Any]) -> List[Listing]:
-    html = fetch_html(source["url"])
     site = source["site"].lower()
+
+    if site == "sreality_api":
+        return collect_sreality_api(source)
+
+    html = fetch_html(source["url"])
 
     if site == "sreality":
         return parse_sreality_html(html, source["name"], source["url"])
@@ -370,3 +499,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

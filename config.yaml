@@ -21,3 +21,18 @@ sources:
     site: "bezrealitky"
     enabled: true
     url: "https://www.bezrealitky.cz/vyhledat?boundaryPoints=%5B%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.363174213830064%7D%2C%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.254992947950115%7D%2C%7B%22lat%22%3A50.01744844676773%2C%22lng%22%3A14.254992947950115%7D%2C%7B%22lat%22%3A50.01744844676773%2C%22lng%22%3A14.363174213830064%7D%2C%7B%22lat%22%3A50.065938375491044%2C%22lng%22%3A14.363174213830064%7D%5D&disposition=DISP_3_1&disposition=DISP_3_KK&disposition=DISP_4_1&disposition=DISP_4_KK&disposition=DISP_5_1&disposition=DISP_5_KK&disposition=DISP_6_1&estateType=BYT&location=exact&offerType=PRONAJEM&searchOnMap=true&currency=CZK"
+    
+  - name: "Sreality Praha 5 / Praha 13 / Stodulky API"
+    site: "sreality_api"
+    enabled: true
+    max_pages: 3
+    api_params:
+      category_main_cb: 1
+      category_type_cb: 2
+      locality_region_id: 10
+      category_sub_cb: "6|7|8|9|10|11|12"
+    bbox:
+      lat_min: 50.01744844676773
+      lat_max: 50.065938375491044
+      lon_min: 14.254992947950115
+      lon_max: 14.363174213830064

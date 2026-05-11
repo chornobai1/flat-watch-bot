@@ -263,25 +263,33 @@ def passes_filters(item: Listing, filters: Dict[str, Any]) -> bool:
 
 def format_telegram_message(item: Listing) -> str:
     parts = [
-        "🏠 <b>Нова квартира</b>",
+        "🏠 Нова квартира",
         "",
-        f"📌 <b>{escape_html(item.title)}</b>",
+        f"📌 {clean_text(item.title)}",
     ]
 
     if item.price:
-        parts.append(f"💰 {escape_html(item.price)}")
+        parts.append(f"💰 {clean_text(item.price)}")
     if item.area:
-        parts.append(f"📐 {escape_html(item.area)}")
+        parts.append(f"📐 {clean_text(item.area)}")
     if item.layout:
-        parts.append(f"🏘 {escape_html(item.layout)}")
+        parts.append(f"🏘 {clean_text(item.layout)}")
+    if item.location:
+        parts.append(f"📍 {clean_text(item.location)}")
 
     parts.extend([
-        f"🌐 Джерело: {escape_html(item.source)}",
+        f"🌐 Джерело: {clean_text(item.source)}",
         "",
-        f"🔗 {escape_html(item.url)}",
+        f"🔗 {clean_text(item.url)}",
     ])
 
-    return "\n".join(parts)
+    message = "\n".join(parts)
+
+    # Telegram має ліміт 4096 символів
+    if len(message) > 3900:
+        message = message[:3900] + "\n\n..."
+
+    return message
 
 
 def escape_html(text: str) -> str:
@@ -298,10 +306,18 @@ def send_telegram(token: str, chat_id: str, message: str) -> None:
     payload = {
         "chat_id": chat_id,
         "text": message,
-        "parse_mode": "HTML",
         "disable_web_page_preview": False,
     }
+
     response = requests.post(url, json=payload, timeout=30)
+
+    if not response.ok:
+        print("Telegram send error:")
+        print("Status:", response.status_code)
+        print("Response:", response.text)
+        print("Message was:")
+        print(message[:1000])
+
     response.raise_for_status()
 
 def fetch_json(url: str, params: dict | None = None) -> dict:
@@ -539,10 +555,21 @@ def main() -> None:
         # пауза між сайтами
         time.sleep(2)
 
-    for item in new_items[:20]:
-        message = format_telegram_message(item)
-        send_telegram(token, chat_id, message)
-        time.sleep(1)
+        sent_count = 0
+
+        for item in new_items[:20]:
+            message = format_telegram_message(item)
+
+            try:
+                send_telegram(token, chat_id, message)
+                sent_count += 1
+            except Exception as e:
+                print(f"Failed to send Telegram message for {item.url}: {e}")
+                continue
+
+    time.sleep(1)
+
+print(f"Telegram messages sent successfully: {sent_count}")
 
     save_seen(seen)
 

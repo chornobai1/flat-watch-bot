@@ -339,6 +339,42 @@ def get_nested(data: dict, path: list, default=None):
             return default
     return current
 
+def slugify_sreality(value: str) -> str:
+    value = clean_text(value).lower()
+
+    replacements = {
+        "á": "a", "č": "c", "ď": "d", "é": "e", "ě": "e",
+        "í": "i", "ň": "n", "ó": "o", "ř": "r", "š": "s",
+        "ť": "t", "ú": "u", "ů": "u", "ý": "y", "ž": "z",
+        "ä": "a", "ö": "o", "ü": "u",
+    }
+
+    for src, dst in replacements.items():
+        value = value.replace(src, dst)
+
+    value = value.replace("+", "+")
+    value = re.sub(r"[^a-z0-9+]+", "-", value)
+    value = re.sub(r"-+", "-", value)
+    value = value.strip("-")
+
+    return value or "praha"
+
+def build_sreality_web_url(detail: dict, source: Dict[str, Any], layout: str, locality: str, estate_id: str) -> str:
+    category_type = str(source.get("api_params", {}).get("category_type_cb", ""))
+
+    if category_type == "1":
+        deal_type = "prodej"
+    elif category_type == "2":
+        deal_type = "pronajem"
+    else:
+        deal_type = "pronajem"
+
+    estate_type = "byt"
+
+    layout_slug = slugify_sreality(layout) if layout else "byt"
+    locality_slug = slugify_sreality(locality) if locality else "praha"
+
+    return f"https://www.sreality.cz/detail/{deal_type}/{estate_type}/{layout_slug}/{locality_slug}/{estate_id}"
 
 def collect_sreality_api(source: Dict[str, Any]) -> List[Listing]:
     api_url = "https://www.sreality.cz/api/cs/v2/estates"
@@ -408,15 +444,20 @@ def collect_sreality_api(source: Dict[str, Any]) -> List[Listing]:
                 found_layout = re.search(r"([1-9]\+(?:kk|1))", title + " " + locality, flags=re.IGNORECASE)
                 layout = found_layout.group(1) if found_layout else ""
 
-            estate_id = str(detail.get("hash_id") or detail.get("id") or detail_href.split("/")[-1])
-            api_detail_url = f"https://www.sreality.cz/api/cs/v2/estates/{estate_id}"
+            estate_id = str(
+                detail.get("hash_id")
+                or estate.get("hash_id")
+                or detail.get("id")
+                or estate.get("id")
+                or detail_href.split("/")[-1]
+            )
 
-            url = (
-                get_nested(detail, ["_links", "canonical", "href"])
-                or get_nested(detail, ["seo", "url"])
-                or get_nested(detail, ["seo", "permalink"])
-                or detail.get("url")
-                or api_detail_url
+            url = build_sreality_web_url(
+                detail=detail,
+                source=source,
+                layout=layout,
+                locality=locality,
+                estate_id=estate_id,
             )
 
             if url.startswith("/"):
